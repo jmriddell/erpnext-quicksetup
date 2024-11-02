@@ -1,0 +1,15 @@
+#!/bin/bash
+
+set -e
+
+# Load scripts
+SCRIPTS_DIR=./utils-scripts
+export PATH="$(pwd)/$SCRIPTS_DIR:$PATH"
+
+
+env_file=defaults.env
+
+frappe_env_file="$(get-file-var $env_file CONFIG_DIR)/$(get-file-var $env_file FRAPPE_ENV_FILE)"
+compose_file="$(get-file-var $env_file CONFIG_DIR)/$(get-file-var $env_file FRAPPE_COMPOSE_FILE)"
+
+docker compose -f $compose_file --env-file $frappe_env_file --project-name $(get-file-var $env_file COMPOSE_PROJECT_NAME) $@

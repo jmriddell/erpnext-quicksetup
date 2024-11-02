@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# Define the .env file path
+ENV_FILE=$1
+
+# Define the variable and its value
+VAR_NAME=$2
+VAR_VALUE=$3
+
+# Check if the .env file exists, if not, create it
+if [ ! -f "$ENV_FILE" ]; then
+  touch "$ENV_FILE"
+fi
+
+# Check if the variable already exists in the .env file
+if grep -q "^$VAR_NAME=" "$ENV_FILE"; then
+  # Update the variable value
+  sed -i "s/^$VAR_NAME=.*/$VAR_NAME=$VAR_VALUE/" "$ENV_FILE"
+else
+  # Add the variable to the .env file
+  echo "$VAR_NAME=$VAR_VALUE" >> "$ENV_FILE"
+fi

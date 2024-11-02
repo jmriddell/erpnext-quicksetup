@@ -1,0 +1,42 @@
+#!/bin/bash
+
+set -e
+
+# Check if the correct number of arguments is provided
+if [ "$#" -ne 3 ]; then
+    echo "Usage: $0 <repo_uri> <commit_or_branch> <output_dir>"
+    exit 1
+fi
+
+# Assign arguments to variables
+REPO_URI=$1
+COMMIT_OR_BRANCH=$2
+OUTPUT_DIR=$3
+
+# Check if the repository already exists
+if [ -d "$OUTPUT_DIR/.git" ]; then
+    echo "Repository already exists in $OUTPUT_DIR"
+
+    # Check if the repository is already checked out to the specified commit or branch
+    CURRENT_COMMIT=$(git -C "$OUTPUT_DIR" rev-parse HEAD)
+    TARGET_COMMIT=$(git -C "$OUTPUT_DIR" rev-parse "$COMMIT_OR_BRANCH")
+
+    if [ "$CURRENT_COMMIT" == "$TARGET_COMMIT" ]; then
+        echo "Repository is already checked out to $COMMIT_OR_BRANCH"
+        exit 0
+    else
+        echo "Repository is not checked out to $COMMIT_OR_BRANCH, checking out now..."
+        git -C "$OUTPUT_DIR" fetch
+        git -C "$OUTPUT_DIR" checkout "$COMMIT_OR_BRANCH"
+        exit 0
+    fi
+fi
+
+# Clone the repository into the specified directory
+git clone "$REPO_URI" "$OUTPUT_DIR"
+
+# Change to the cloned directory
+cd "$OUTPUT_DIR"
+
+# Checkout the specified commit or branch
+git -C "$OUTPUT_DIR" checkout "$COMMIT_OR_BRANCH"

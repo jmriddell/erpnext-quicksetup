@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+# Get a variable from a file
+
+file=$1
+variable_name=$2
+
+
+if [ -f $file ]; then
+    value=$(grep -E "^$variable_name=" $file | cut -d'=' -f2)
+    echo $value
+else
+    exit 1
+fi
